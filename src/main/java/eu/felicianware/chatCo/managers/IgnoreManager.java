@@ -2,6 +2,10 @@ package eu.felicianware.chatCo.managers;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
+import java.io.File;
+import java.io.IOException;
+import java.util.stream.Collectors;
 
 import java.util.*;
 
@@ -94,4 +98,38 @@ public class IgnoreManager {
         }
         return names;
     }
+
+    public void saveIgnoreLists(File file) {
+        YamlConfiguration config = new YamlConfiguration();
+        for (Map.Entry<UUID, Set<UUID>> entry : ignoreLists.entrySet()) {
+            List<String> ignoredUUIDs = entry.getValue().stream()
+                    .map(UUID::toString)
+                    .collect(Collectors.toList());
+            config.set(entry.getKey().toString(), ignoredUUIDs);
+        }
+        try {
+            config.save(file);
+            System.out.println("Ignore lists have been saved.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadIgnoreLists(File file) {
+        if (!file.exists()) {
+            System.out.println("Ignore list file does not exist. No data loaded.");
+            return;
+        }
+        YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+        for (String key : config.getKeys(false)) {
+            UUID playerUUID = UUID.fromString(key);
+            List<String> ignoredUUIDStrings = config.getStringList(key);
+            Set<UUID> ignoredUUIDs = ignoredUUIDStrings.stream()
+                    .map(UUID::fromString)
+                    .collect(Collectors.toSet());
+            ignoreLists.put(playerUUID, ignoredUUIDs);
+        }
+        System.out.println("Ignore lists have been loaded.");
+    }
+
 }

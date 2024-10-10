@@ -3,9 +3,16 @@ package eu.felicianware.chatCo;
 import eu.felicianware.chatCo.commands.IgnoreCommand;
 import eu.felicianware.chatCo.commands.IgnoreListCommand;
 import eu.felicianware.chatCo.commands.MSGCommand;
+import eu.felicianware.chatCo.ChatListener;
+import eu.felicianware.chatCo.managers.IgnoreManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public final class ChatCo extends JavaPlugin {
+
+    private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
+    private File ignoreListFile;
 
     @Override
     public void onEnable() {
@@ -16,10 +23,21 @@ public final class ChatCo extends JavaPlugin {
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
+
+        // Create the data folder if it doesn't exist
+        if (!getDataFolder().exists()) {
+            getDataFolder().mkdirs();
+        }
+
+        // Initialize the ignore list file
+        ignoreListFile = new File(getDataFolder(), "ignoreLists.yml");
+
+        // Load ignore lists
+        ignoreManager.loadIgnoreLists(ignoreListFile);
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        ignoreManager.saveIgnoreLists(ignoreListFile);
     }
 }
