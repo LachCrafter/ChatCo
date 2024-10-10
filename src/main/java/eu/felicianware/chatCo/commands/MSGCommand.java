@@ -34,7 +34,7 @@ public class MSGCommand implements CommandExecutor {
 
         // Check if the correct number of arguments are provided.
         if (args.length < 2) {
-            player.sendMessage(Component.text("Usage: /" + label + " <player> <message>", NamedTextColor.RED));
+            player.sendMessage(Component.text("Usage: /" + label + " <player> <message>", NamedTextColor.DARK_RED));
             return true;
         }
 
@@ -44,7 +44,7 @@ public class MSGCommand implements CommandExecutor {
 
         // Check if the target player is online.
         if (target == null || !target.isOnline()) {
-            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.RED));
+            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.DARK_RED));
             return true;
         }
 
