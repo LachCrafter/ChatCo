@@ -31,7 +31,7 @@ public class IgnoreCommand implements CommandExecutor {
 
         // Check if the correct number of arguments are provided.
         if (args.length != 1) {
-            player.sendMessage(Component.text("Usage: /ignore <player>", NamedTextColor.RED));
+            player.sendMessage(Component.text("Usage: /ignore <player>", NamedTextColor.DARK_RED));
             return true;
         }
 
@@ -41,13 +41,13 @@ public class IgnoreCommand implements CommandExecutor {
 
         // Check if the target player is online.
         if (target == null || !target.isOnline()) {
-            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.RED));
+            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.DARK_RED));
             return true;
         }
 
         // Prevent players from ignoring themselves.
         if (player.getUniqueId().equals(target.getUniqueId())) {
-            player.sendMessage(Component.text("You cannot ignore yourself.", NamedTextColor.RED));
+            player.sendMessage(Component.text("You cannot ignore yourself.", NamedTextColor.DARK_RED));
             return true;
         }
 
@@ -58,11 +58,11 @@ public class IgnoreCommand implements CommandExecutor {
         if (ignoreManager.isIgnoring(playerUUID, targetUUID)) {
             // Unignore the player.
             ignoreManager.unignorePlayer(playerUUID, targetUUID);
-            player.sendMessage(Component.text("You have unignored " + target.getName() + ".", NamedTextColor.GREEN));
+            player.sendMessage(Component.text("You have unignored " + target.getName() + ".", NamedTextColor.GOLD));
         } else {
             // Ignore the player.
             ignoreManager.ignorePlayer(playerUUID, targetUUID);
-            player.sendMessage(Component.text("You have ignored " + target.getName() + ".", NamedTextColor.GREEN));
+            player.sendMessage(Component.text("You have ignored " + target.getName() + ".", NamedTextColor.GOLD));
         }
 
         return true;

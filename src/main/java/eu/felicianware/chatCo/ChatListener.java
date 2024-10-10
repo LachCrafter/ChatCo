@@ -20,8 +20,7 @@ public class ChatListener implements Listener {
         String message = PlainTextComponentSerializer.plainText().serialize(event.message());
 
         if (message.startsWith(">")) {
-            String modifiedMessage = message.substring(1);
-            Component greenMessage = Component.text(modifiedMessage)
+            Component greenMessage = Component.text(message)
                     .color(NamedTextColor.GREEN);
             event.message(greenMessage);
         }
