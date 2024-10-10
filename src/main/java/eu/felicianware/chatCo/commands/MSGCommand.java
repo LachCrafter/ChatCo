@@ -50,15 +50,15 @@ public class MSGCommand implements CommandExecutor {
         // Send the formatted messages
         TextComponent senderMessage = Component.text()
                 .append(Component.text("You whisper to ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(target.getName()))
+                .append(Component.text(target.getName(), NamedTextColor.LIGHT_PURPLE))
                 .append(Component.text(": "))
-                .append(Component.text(message))
+                .append(Component.text(message, NamedTextColor.LIGHT_PURPLE))
                 .build();
 
         TextComponent targetMessage = Component.text()
                 .append(Component.text(player.getName(), NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(" whispers: "))
-                .append(Component.text(message))
+                .append(Component.text(" whispers: ", NamedTextColor.LIGHT_PURPLE))
+                .append(Component.text(message, NamedTextColor.LIGHT_PURPLE))
                 .build();
 
         player.sendMessage(senderMessage);
