@@ -1,0 +1,15 @@
+name: ChatCo
+version: 1.0
+main: eu.felicianware.chatCo.ChatCoMain
+folia-supported: true
+commands:
+  msg:
+    description: Send a private message to a player.
+    usage: /<command> <player> <message>
+    aliases: [pm, w]
+  ignore:
+    description: Ignore or unignore a player.
+    usage: /<command> <player>
+  ignorelist:
+    description: Lists all players you are currently ignoring.
+    usage: /<command>
