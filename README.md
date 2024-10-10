@@ -29,14 +29,6 @@ No additional configuration is required out of the box. All features are ready t
 - `/ignore <player>`: Ignore or unignore a player.
 - `/ignorelist`: Display the list of players you are currently ignoring.
 
-#### Permissions
-
-By default, all players have access to ChatCo commands. To restrict commands, use the following permission nodes:
-
-- `chatco.msg`: Allows use of `/msg`, `/pm`, and `/w`.
-- `chatco.ignore`: Allows use of `/ignore`.
-- `chatco.ignorelist`: Allows use of `/ignorelist`.
-
 *Note: If no permissions plugin is installed, all players can use the commands.*
 
 ### Usage Examples
