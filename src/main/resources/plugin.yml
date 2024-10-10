@@ -1,6 +1,6 @@
 name: ChatCo
 version: 1.0
-main: eu.felicianware.chatCo.ChatCoMain
+main: eu.felicianware.chatCo.ChatCo
 folia-supported: true
 commands:
   msg:
