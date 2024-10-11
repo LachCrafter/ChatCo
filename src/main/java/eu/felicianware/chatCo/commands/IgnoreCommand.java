@@ -3,6 +3,8 @@ package eu.felicianware.chatCo.commands;
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,14 +37,17 @@ public class IgnoreCommand implements CommandExecutor {
             return true;
         }
 
-        // Retrieve the target player.
         String targetName = args[0];
-        Player target = player.getServer().getPlayerExact(targetName);
 
-        // Check if the target player is online.
-        if (target == null || !target.isOnline()) {
-            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.DARK_RED));
-            return true;
+        // Get the OfflinePlayer object.
+        OfflinePlayer target = Bukkit.getOfflinePlayerIfCached(targetName);
+        if (target == null) {
+            // Try to get the player by UUID or fetch them from the Mojang API.
+            target = Bukkit.getOfflinePlayer(targetName);
+            if (!target.hasPlayedBefore()) {
+                player.sendMessage(Component.text("Player not found.", NamedTextColor.DARK_RED));
+                return true;
+            }
         }
 
         // Prevent players from ignoring themselves.
