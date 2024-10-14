@@ -3,7 +3,6 @@ package eu.felicianware.chatCo;
 import eu.felicianware.chatCo.commands.IgnoreCommand;
 import eu.felicianware.chatCo.commands.IgnoreListCommand;
 import eu.felicianware.chatCo.commands.MSGCommand;
-import eu.felicianware.chatCo.ChatListener;
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
