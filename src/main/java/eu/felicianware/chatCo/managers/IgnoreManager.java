@@ -5,6 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import java.util.*;
@@ -16,6 +17,8 @@ import java.util.*;
  *
  */
 public class IgnoreManager {
+
+    Logger LOGGER = Bukkit.getLogger();
 
     private static IgnoreManager instance;
     private final Map<UUID, Set<UUID>> ignoreLists;
@@ -109,7 +112,7 @@ public class IgnoreManager {
         }
         try {
             config.save(file);
-            System.out.println("Ignore lists have been saved.");
+            LOGGER.info("Ignore lists have been saved.");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -117,7 +120,7 @@ public class IgnoreManager {
 
     public void loadIgnoreLists(File file) {
         if (!file.exists()) {
-            System.out.println("Ignore list file does not exist. No data loaded.");
+            LOGGER.warning("Ignore list file does not exist. No data loaded.");
             return;
         }
         YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
@@ -129,7 +132,7 @@ public class IgnoreManager {
                     .collect(Collectors.toSet());
             ignoreLists.put(playerUUID, ignoredUUIDs);
         }
-        System.out.println("Ignore lists have been loaded.");
+        LOGGER.info("Ignore lists have been loaded.");
     }
 
 }
