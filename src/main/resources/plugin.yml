@@ -15,3 +15,7 @@ commands:
   ignorelist:
     description: Lists all players you are currently ignoring.
     usage: /<command>
+  r:
+    description: Sends a message the last player.
+    usage: /<command> <message>
+    aliases: [reply]

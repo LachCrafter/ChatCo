@@ -20,6 +20,7 @@ public final class ChatCo extends JavaPlugin {
         getCommand("msg").setExecutor(new MSGCommand());
         getCommand("ignore").setExecutor(new IgnoreCommand());
         getCommand("ignorelist").setExecutor(new IgnoreListCommand());
+        getCommand("r").setExecutor(new IgnoreCommand());
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
