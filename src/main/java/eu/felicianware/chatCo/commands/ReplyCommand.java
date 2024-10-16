@@ -5,19 +5,17 @@ import eu.felicianware.chatCo.managers.MessageManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 /**
- * Handles the /msg command for private messaging.
- *
- * @author lachcrafter
+ * Handles the /r command to reply to the last messaged player.
  */
-public class MSGCommand implements CommandExecutor {
+public class ReplyCommand implements CommandExecutor {
 
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
     private final MessageManager messageManager = MessageManager.getInstance();
@@ -31,31 +29,33 @@ public class MSGCommand implements CommandExecutor {
             return true;
         }
 
-        // Check if the correct number of arguments are provided.
-        if (args.length < 2) {
-            player.sendMessage(Component.text("Usage: /" + label + " <player> <message>", NamedTextColor.DARK_RED));
+        // Check if message is provided.
+        if (args.length < 1) {
+            player.sendMessage(Component.text("Usage: /" + label + " <message>", NamedTextColor.DARK_RED));
             return true;
         }
 
-        // Retrieve the target player.
-        String targetName = args[0];
-        Player target = player.getServer().getPlayerExact(targetName);
+        UUID senderUUID = player.getUniqueId();
 
-        // Check if the target player is online.
+        // Get the last messaged player.
+        UUID targetUUID = messageManager.getLastMessaged(senderUUID);
+        if (targetUUID == null) {
+            player.sendMessage(Component.text("You have no one to reply to.", NamedTextColor.DARK_RED));
+            return true;
+        }
+
+        // Get the target player.
+        Player target = Bukkit.getPlayer(targetUUID);
         if (target == null || !target.isOnline()) {
             player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.DARK_RED));
             return true;
         }
 
         // Construct the message from the arguments.
-        String[] messageArgs = Arrays.copyOfRange(args, 1, args.length);
-        String message = String.join(" ", messageArgs);
-
-        UUID senderUUID = player.getUniqueId();
-        UUID recipientUUID = target.getUniqueId();
+        String message = String.join(" ", args);
 
         // Check if the recipient has ignored the sender.
-        if (ignoreManager.isIgnoring(recipientUUID, senderUUID)) {
+        if (ignoreManager.isIgnoring(targetUUID, senderUUID)) {
             player.sendMessage(Component.text("You cannot message this player.", NamedTextColor.DARK_RED));
             return true;
         }
@@ -80,8 +80,8 @@ public class MSGCommand implements CommandExecutor {
         target.sendMessage(targetMessage);
 
         // Update last messaged players.
-        messageManager.setLastMessaged(senderUUID, recipientUUID);
-        messageManager.setLastMessaged(recipientUUID, senderUUID);
+        messageManager.setLastMessaged(senderUUID, targetUUID);
+        messageManager.setLastMessaged(targetUUID, senderUUID);
 
         return true;
     }
