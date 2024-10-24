@@ -5,9 +5,11 @@ import eu.felicianware.chatCo.managers.MessageManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,8 +24,14 @@ import java.util.UUID;
  */
 public class MSGCommand implements CommandExecutor {
 
+    private final FileConfiguration config;
+    private final MiniMessage mm = MiniMessage.miniMessage();
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
     private final MessageManager messageManager = MessageManager.getInstance();
+
+    public MSGCommand(FileConfiguration config) {
+        this.config = config;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -36,7 +44,11 @@ public class MSGCommand implements CommandExecutor {
 
         // Check if the correct number of arguments are provided.
         if (args.length < 2) {
-            player.sendMessage(Component.text("Usage: /" + label + " <player> <message>", NamedTextColor.DARK_RED));
+            String usage = config.getString("usages.whisper");
+            usage = usage
+                    .replace("%label%", label);
+            Component usageText = mm.deserialize(usage);
+            player.sendMessage(usageText);
             return true;
         }
 
@@ -46,7 +58,9 @@ public class MSGCommand implements CommandExecutor {
 
         // Check if the target player is online.
         if (target == null || !target.isOnline()) {
-            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.DARK_RED));
+
+            Component notFound = mm.deserialize(config.getString("messages.playerNotFound"));
+            player.sendMessage(notFound);
             return true;
         }
 
@@ -57,13 +71,11 @@ public class MSGCommand implements CommandExecutor {
         UUID senderUUID = player.getUniqueId();
         UUID recipientUUID = target.getUniqueId();
 
-        // Send the formatted message to the sender.
-        TextComponent senderMessage = Component.text()
-                .append(Component.text("You whisper to ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(target.getName(), NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(": ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(message, NamedTextColor.LIGHT_PURPLE))
-                .build();
+        String senderMessageRaw = config.getString("messages.whisperSender");
+        senderMessageRaw = senderMessageRaw
+                .replace("%player%", sender.getName())
+                .replace("%message%", message);
+        Component senderMessage = mm.deserialize(senderMessageRaw);
 
         player.sendMessage(senderMessage);
 
@@ -74,11 +86,12 @@ public class MSGCommand implements CommandExecutor {
         }
 
         // Send the formatted message to the recipient.
-        TextComponent targetMessage = Component.text()
-                .append(Component.text(player.getName(), NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(" whispers: ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(message, NamedTextColor.LIGHT_PURPLE))
-                .build();
+
+        String targetMessageRaw = config.getString("messages.whisperTarget");
+        targetMessageRaw = targetMessageRaw
+                .replace("%player%", sender.getName())
+                .replace("%message%", message);
+        Component targetMessage = mm.deserialize(targetMessageRaw);
 
         target.sendMessage(targetMessage);
 

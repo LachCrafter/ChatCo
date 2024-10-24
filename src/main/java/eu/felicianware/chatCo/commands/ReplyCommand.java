@@ -5,10 +5,12 @@ import eu.felicianware.chatCo.managers.MessageManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,8 +23,14 @@ import java.util.UUID;
  */
 public class ReplyCommand implements CommandExecutor {
 
+    private final FileConfiguration config;
+    private final MiniMessage mm = MiniMessage.miniMessage();
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
     private final MessageManager messageManager = MessageManager.getInstance();
+
+    public ReplyCommand(FileConfiguration config) {
+        this.config = config;
+    }
 
 
     @Override
@@ -34,7 +42,11 @@ public class ReplyCommand implements CommandExecutor {
         }
 
         if (args.length < 1 ) {
-            player.sendMessage(Component.text("Usage: /" + label + " <message>", NamedTextColor.DARK_RED));
+            String usage = config.getString("usages.reply");
+            usage = usage
+                    .replace("%label%", label);
+            Component usageText = mm.deserialize(usage);
+            player.sendMessage(usageText);
             return true;
         }
 
@@ -42,37 +54,39 @@ public class ReplyCommand implements CommandExecutor {
 
         UUID targetUUID = messageManager.getLastMessaged(senderUUID);
         if (targetUUID == null) {
-            player.sendMessage(Component.text("You have no one to reply to", NamedTextColor.DARK_RED));
+
+            Component noneReply = mm.deserialize(config.getString("messages.noneReply"));
+
+            player.sendMessage(noneReply);
             return true;
         }
 
         Player target = Bukkit.getPlayer(targetUUID);
-        if (target == null || !player.isOnline()) {
-            player.sendMessage(Component.text("Player not found or not online.", NamedTextColor.DARK_RED));
+        if (target == null || !target.isOnline()) {
+            Component notFound = mm.deserialize(config.getString("messages.playerNotFound"));
+            player.sendMessage(notFound);
             return true;
         }
 
         String message = String.join(" ", args);
 
         if (ignoreManager.isIgnoring(targetUUID, senderUUID)) {
-            player.sendMessage(Component.text("You cannot message this player.", NamedTextColor.DARK_RED));
             return true;
         }
 
-        TextComponent senderMessage = Component.text()
-                .append(Component.text("You whisper to ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(target.getName(), NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(": ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(message, NamedTextColor.LIGHT_PURPLE))
-                .build();
+        String senderMessageRaw = config.getString("messages.whisperSender");
+        senderMessageRaw = senderMessageRaw
+                .replace("%player%", sender.getName())
+                .replace("%message%", message);
+        Component senderMessage = mm.deserialize(senderMessageRaw);
 
         player.sendMessage(senderMessage);
 
-        TextComponent targetMessage = Component.text()
-                .append(Component.text(player.getName(), NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(" whispers: ", NamedTextColor.LIGHT_PURPLE))
-                .append(Component.text(message, NamedTextColor.LIGHT_PURPLE))
-                .build();
+        String targetMessageRaw = config.getString("messages.whisperTarget");
+        targetMessageRaw = targetMessageRaw
+                .replace("%player%", sender.getName())
+                .replace("%message%", message);
+        Component targetMessage = mm.deserialize(targetMessageRaw);
 
         target.sendMessage(targetMessage);
 

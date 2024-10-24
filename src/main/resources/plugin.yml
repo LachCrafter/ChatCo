@@ -19,3 +19,6 @@ commands:
     description: Sends a message the last player.
     usage: /<command> <message>
     aliases: [reply]
+  coreload:
+    description: Reload the configuration
+    usage: /coreload

@@ -1,10 +1,8 @@
 package eu.felicianware.chatCo;
 
-import eu.felicianware.chatCo.commands.IgnoreCommand;
-import eu.felicianware.chatCo.commands.IgnoreListCommand;
-import eu.felicianware.chatCo.commands.MSGCommand;
-import eu.felicianware.chatCo.ChatListener;
+import eu.felicianware.chatCo.commands.*;
 import eu.felicianware.chatCo.managers.IgnoreManager;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -16,11 +14,15 @@ public final class ChatCo extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        FileConfiguration config = getConfig();
+        saveDefaultConfig();
+
         // Register the commands
-        getCommand("msg").setExecutor(new MSGCommand());
-        getCommand("ignore").setExecutor(new IgnoreCommand());
-        getCommand("ignorelist").setExecutor(new IgnoreListCommand());
-        getCommand("r").setExecutor(new IgnoreCommand());
+        getCommand("msg").setExecutor(new MSGCommand(config));
+        getCommand("ignore").setExecutor(new IgnoreCommand(config));
+        getCommand("ignorelist").setExecutor(new IgnoreListCommand(config));
+        getCommand("r").setExecutor(new ReplyCommand(config));
+        getCommand("coreload").setExecutor(new ReloadCommand(this));
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
@@ -41,4 +43,5 @@ public final class ChatCo extends JavaPlugin {
     public void onDisable() {
         ignoreManager.saveIgnoreLists(ignoreListFile);
     }
+
 }

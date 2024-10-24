@@ -3,9 +3,11 @@ package eu.felicianware.chatCo.commands;
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -18,7 +20,13 @@ import java.util.List;
  */
 public class IgnoreListCommand implements CommandExecutor {
 
+    private final FileConfiguration config;
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
+    private final MiniMessage mm = MiniMessage.miniMessage();
+
+    public IgnoreListCommand(FileConfiguration config) {
+        this.config = config;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
@@ -33,7 +41,8 @@ public class IgnoreListCommand implements CommandExecutor {
         List<String> ignoredNames = ignoreManager.getIgnoredPlayerNames(player.getUniqueId());
 
         if (ignoredNames.isEmpty()) {
-            player.sendMessage(Component.text("You are not ignoring any players.", NamedTextColor.GOLD));
+            Component notIgnoring = mm.deserialize(config.getString("messages.ignoreListEmpty"));
+            player.sendMessage(notIgnoring);
         } else {
             StringBuilder listBuilder = new StringBuilder();
             for (String name : ignoredNames) {
@@ -42,8 +51,12 @@ public class IgnoreListCommand implements CommandExecutor {
             // Remove the trailing comma and space.
             String list = listBuilder.substring(0, listBuilder.length() - 2);
 
-            player.sendMessage(Component.text("Players you are ignoring:", NamedTextColor.GOLD));
-            player.sendMessage(Component.text(list, NamedTextColor.RED));
+            String ignoreList = config.getString("messages.ignoreList");
+            ignoreList = ignoreList
+                    .replace("%list%", list);
+            Component ignoring = mm.deserialize(ignoreList);
+
+            player.sendMessage(ignoring);
         }
 
         return true;

@@ -1,0 +1,28 @@
+# ChatCo config
+# We use the minimessage format here for messages
+# read the documentation here: https://docs.advntr.dev/minimessage/format.html
+
+messages:
+  whisperSender: "<light_purple>You whisper to %player%: %message%"
+  whisperTarget: "<light_purple>%player% whispers: %message%"
+
+  noneReply: "<gold>You have no one to reply to."
+
+  playerNotFound: "<dark_red>Player not found."
+
+  ignoreSelf: "<dark_red>You can't ignore yourself."
+
+  ignoring: "<gold>You have ignored <red>%player%<gold>."
+  unignoring: "<gold>You have unignored <red>%player%<gold>."
+
+  ignoreList: "<gold>You are ignoring: <red>%list%"
+  ignoreListEmpty: "<gold>You are not ignoring any players."
+
+  noPermission: "<dark_red>Bad command. Type /help for all commands."
+
+  reloadSuccess: "<gold>The configuration has been successfully reloaded."
+
+usages:
+  whisper: "<dark_red>Usage: /%label% <player> <message>"
+  reply: "<dark_red>Usage: /%label% <message>"
+  ignore: "<dark_red>Usage: /ignore <player>"
