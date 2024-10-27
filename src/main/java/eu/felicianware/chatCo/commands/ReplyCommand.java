@@ -28,7 +28,7 @@ public class ReplyCommand implements BasicCommand {
         if (args.length < 1 ) {
             String usage = config.getString("usages.reply");
             usage = usage
-                    .replace("%label%", "reply"); // TODO - Find way to find alias/label
+                    .replace("%label%", "reply"); // TODO - get alias of command
             Component usageText = mm.deserialize(usage);
             stack.getExecutor().sendMessage(usageText);
         }

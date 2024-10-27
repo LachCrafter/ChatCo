@@ -23,6 +23,8 @@ public final class ChatCo extends JavaPlugin {
         FileConfiguration config = getConfig();
         saveDefaultConfig();
         LifecycleEventManager<@NotNull Plugin> manager = this.getLifecycleManager();
+
+        // register commands
         manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             commands.register("reload", "Reload the plugin configuration", new ReloadCommand(this, config));
@@ -35,9 +37,6 @@ public final class ChatCo extends JavaPlugin {
                     new ReplyCommand(config)
             );
         });
-
-        // Register the command.
-        getCommand("msg").setExecutor(new MSGCommandOld(config));
 
         // Register Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
