@@ -2,66 +2,88 @@ package eu.felicianware.chatCo.commands;
 
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import eu.felicianware.chatCo.managers.MessageManager;
-import io.papermc.paper.command.brigadier.BasicCommand;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class ReplyCommand implements BasicCommand {
+/**
+ * Handles the /r /reply command.
+ *
+ * @author lachcrafter
+ */
+public class ReplyCommandOld implements CommandExecutor {
+
     private final FileConfiguration config;
     private final MiniMessage mm = MiniMessage.miniMessage();
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
     private final MessageManager messageManager = MessageManager.getInstance();
 
-    public ReplyCommand(FileConfiguration config) {
+    public ReplyCommandOld(FileConfiguration config) {
         this.config = config;
     }
 
+
     @Override
-    public void execute(@NotNull CommandSourceStack stack, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.DARK_RED));
+            return true;
+        }
+
         if (args.length < 1 ) {
             String usage = config.getString("usages.reply");
             usage = usage
-                    .replace("%label%", "reply"); // TODO - Find way to find alias/label
+                    .replace("%label%", label);
             Component usageText = mm.deserialize(usage);
-            stack.getExecutor().sendMessage(usageText);
+            player.sendMessage(usageText);
+            return true;
         }
 
-        UUID senderUUID = stack.getExecutor().getUniqueId();
+        UUID senderUUID = player.getUniqueId();
 
         UUID targetUUID = messageManager.getLastMessaged(senderUUID);
         if (targetUUID == null) {
 
             Component noneReply = mm.deserialize(config.getString("messages.noneReply"));
 
-            stack.getExecutor().sendMessage(noneReply);
+            player.sendMessage(noneReply);
+            return true;
         }
 
         Player target = Bukkit.getPlayer(targetUUID);
         if (target == null || !target.isOnline()) {
             Component notFound = mm.deserialize(config.getString("messages.playerNotFound"));
-            stack.getExecutor().sendMessage(notFound);
+            player.sendMessage(notFound);
+            return true;
         }
 
         String message = String.join(" ", args);
 
+        if (ignoreManager.isIgnoring(targetUUID, senderUUID)) {
+            return true;
+        }
+
         String senderMessageRaw = config.getString("messages.whisperSender");
         senderMessageRaw = senderMessageRaw
-                .replace("%player%", stack.getExecutor().getName())
+                .replace("%player%", sender.getName())
                 .replace("%message%", message);
         Component senderMessage = mm.deserialize(senderMessageRaw);
 
-        stack.getExecutor().sendMessage(senderMessage);
+        player.sendMessage(senderMessage);
 
         String targetMessageRaw = config.getString("messages.whisperTarget");
         targetMessageRaw = targetMessageRaw
-                .replace("%player%", stack.getExecutor().getName())
+                .replace("%player%", sender.getName())
                 .replace("%message%", message);
         Component targetMessage = mm.deserialize(targetMessageRaw);
 
@@ -69,5 +91,8 @@ public class ReplyCommand implements BasicCommand {
 
         messageManager.setLastMessaged(senderUUID, targetUUID);
         messageManager.setLastMessaged(targetUUID, senderUUID);
+
+        return true;
     }
+
 }

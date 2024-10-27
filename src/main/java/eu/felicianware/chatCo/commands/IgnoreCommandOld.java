@@ -1,31 +1,49 @@
 package eu.felicianware.chatCo.commands;
 
 import eu.felicianware.chatCo.managers.IgnoreManager;
-import io.papermc.paper.command.brigadier.BasicCommand;
-import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.UUID;
 
-public class IgnoreCommand implements BasicCommand {
+/**
+ * @author lachcrafter
+ *
+ * Handles the /ignore command to ignore or unignore players.
+ */
+public class IgnoreCommandOld implements CommandExecutor {
+
     private final FileConfiguration config;
     private final MiniMessage mm = MiniMessage.miniMessage();
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
 
-    public IgnoreCommand(FileConfiguration config) {
+    public IgnoreCommandOld(FileConfiguration config) {
         this.config = config;
     }
 
     @Override
-    public void execute(@NotNull CommandSourceStack stack, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
+
+        // Ensure the sender is a player.
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
+            return true;
+        }
+
+        // Check if the correct number of arguments are provided.
         if (args.length != 1) {
             Component usage = mm.deserialize(config.getString("usages.ignore"));
-            stack.getSender().sendMessage(usage);
+            player.sendMessage(usage);
+            return true;
         }
 
         String targetName = args[0];
@@ -37,17 +55,19 @@ public class IgnoreCommand implements BasicCommand {
             target = Bukkit.getOfflinePlayer(targetName);
             if (!target.hasPlayedBefore()) {
                 Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
-                stack.getExecutor().sendMessage(playerNotFound);
+                player.sendMessage(playerNotFound);
+                return true;
             }
         }
 
         // Prevent players from ignoring themselves.
-        if (stack.getExecutor().getUniqueId().equals(target.getUniqueId())) {
+        if (player.getUniqueId().equals(target.getUniqueId())) {
             Component ignoreThemselves = mm.deserialize(config.getString("messages.ignoreSelf"));
-            stack.getExecutor().sendMessage(ignoreThemselves);
+            player.sendMessage(ignoreThemselves);
+            return true;
         }
 
-        UUID playerUUID = stack.getExecutor().getUniqueId();
+        UUID playerUUID = player.getUniqueId();
         UUID targetUUID = target.getUniqueId();
 
         // Toggle ignoring status.
@@ -59,7 +79,7 @@ public class IgnoreCommand implements BasicCommand {
                     .replace("%player%", target.getName());
             Component unignored = mm.deserialize(unignoringMessage);
 
-            stack.getExecutor().sendMessage(unignored);
+            player.sendMessage(unignored);
 
         } else {
             // Ignore the player.
@@ -68,8 +88,9 @@ public class IgnoreCommand implements BasicCommand {
             ignoringMessage = ignoringMessage
                     .replace("%player%", target.getName());
             Component ignored = mm.deserialize(ignoringMessage);
-            stack.getExecutor().sendMessage(ignored);
+            player.sendMessage(ignored);
         }
 
+        return true;
     }
 }

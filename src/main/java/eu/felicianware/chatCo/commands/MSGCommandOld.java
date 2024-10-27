@@ -3,7 +3,6 @@ package eu.felicianware.chatCo.commands;
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import eu.felicianware.chatCo.managers.MessageManager;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
@@ -11,7 +10,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.UUID;
@@ -22,14 +20,14 @@ import java.util.UUID;
  *
  * The /w, /pm, /msg... private messaging system will be handled here.
  */
-public class MSGCommand implements CommandExecutor {
+public class MSGCommandOld implements CommandExecutor {
 
     private final FileConfiguration config;
     private final MiniMessage mm = MiniMessage.miniMessage();
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
     private final MessageManager messageManager = MessageManager.getInstance();
 
-    public MSGCommand(FileConfiguration config) {
+    public MSGCommandOld(FileConfiguration config) {
         this.config = config;
     }
 
