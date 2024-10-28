@@ -31,21 +31,21 @@ public class IgnoreCommand implements BasicCommand {
 
         String targetName = args[0];
 
-        // Get the OfflinePlayer object.
+        // Get the OfflinePlayer object, handling null in case the player isn't cached or hasn't joined.
         OfflinePlayer target = Bukkit.getOfflinePlayerIfCached(targetName);
-        if (target == null) {
-            // Try to get the player by UUID or fetch them from the Mojang API.
-            target = Bukkit.getOfflinePlayer(targetName);
-            if (!target.hasPlayedBefore()) {
-                Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
-                stack.getExecutor().sendMessage(playerNotFound);
-            }
+
+        // If the player hasn't been cached or never played, send an error message and exit.
+        if (target == null || !target.hasPlayedBefore()) {
+            Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
+            stack.getExecutor().sendMessage(playerNotFound);
+            return;
         }
 
         // Prevent players from ignoring themselves.
         if (stack.getExecutor().getUniqueId().equals(target.getUniqueId())) {
             Component ignoreThemselves = mm.deserialize(config.getString("messages.ignoreSelf"));
             stack.getExecutor().sendMessage(ignoreThemselves);
+            return;
         }
 
         UUID playerUUID = stack.getExecutor().getUniqueId();
@@ -53,24 +53,18 @@ public class IgnoreCommand implements BasicCommand {
 
         // Toggle ignoring status.
         if (ignoreManager.isIgnoring(playerUUID, targetUUID)) {
-            // Unignore the player.
             ignoreManager.unignorePlayer(playerUUID, targetUUID);
             String unignoringMessage = config.getString("messages.unignoring");
-            unignoringMessage = unignoringMessage
-                    .replace("%player%", target.getName());
+            unignoringMessage = unignoringMessage.replace("%player%", target.getName());
             Component unignored = mm.deserialize(unignoringMessage);
-
             stack.getExecutor().sendMessage(unignored);
-
         } else {
             // Ignore the player.
             ignoreManager.ignorePlayer(playerUUID, targetUUID);
             String ignoringMessage = config.getString("messages.ignoring");
-            ignoringMessage = ignoringMessage
-                    .replace("%player%", target.getName());
+            ignoringMessage = ignoringMessage.replace("%player%", target.getName());
             Component ignored = mm.deserialize(ignoringMessage);
             stack.getExecutor().sendMessage(ignored);
         }
-
     }
 }
