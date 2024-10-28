@@ -26,6 +26,7 @@ public class IgnoreCommand implements BasicCommand {
         if (args.length != 1) {
             Component usage = mm.deserialize(config.getString("usages.ignore"));
             stack.getSender().sendMessage(usage);
+            return;
         }
 
         String targetName = args[0];

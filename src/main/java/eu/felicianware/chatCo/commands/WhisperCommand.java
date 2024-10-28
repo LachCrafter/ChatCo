@@ -34,6 +34,7 @@ public class WhisperCommand implements BasicCommand {
                     .replace("%label%", "whisper"); // TODO - Find way to find alias/label
             Component usageText = mm.deserialize(usage);
             stack.getExecutor().sendMessage(usageText);
+            return;
         }
 
         // Retrieve the target player.

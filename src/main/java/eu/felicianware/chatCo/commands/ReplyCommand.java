@@ -31,6 +31,7 @@ public class ReplyCommand implements BasicCommand {
                     .replace("%label%", "reply"); // TODO - get alias of command
             Component usageText = mm.deserialize(usage);
             stack.getExecutor().sendMessage(usageText);
+            return;
         }
 
         UUID senderUUID = stack.getExecutor().getUniqueId();
