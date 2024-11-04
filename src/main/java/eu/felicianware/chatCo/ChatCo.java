@@ -39,7 +39,7 @@ public final class ChatCo extends JavaPlugin {
             commands.register(
                     "whisper",
                     "Whisper to a player",
-                    List.of("w", "pm"),
+                    List.of("w", "pm", "msg"),
                     new WhisperCommand(config)
             );
         });
