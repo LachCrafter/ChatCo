@@ -36,6 +36,12 @@ public final class ChatCo extends JavaPlugin {
                     List.of("r"),
                     new ReplyCommand(config)
             );
+            commands.register(
+                    "whisper",
+                    "Whisper to a player",
+                    List.of("w", "pm"),
+                    new WhisperCommand(config)
+            );
         });
 
         // Register Listeners
