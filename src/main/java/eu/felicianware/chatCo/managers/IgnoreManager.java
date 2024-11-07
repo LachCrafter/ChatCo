@@ -95,8 +95,6 @@ public class IgnoreManager {
             OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
             if (offlinePlayer.getName() != null) {
                 names.add(offlinePlayer.getName());
-            } else {
-                names.add(uuid.toString());
             }
         }
         return names;
