@@ -6,12 +6,15 @@ import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 public class WhisperCommand implements BasicCommand {
 
@@ -61,10 +64,12 @@ public class WhisperCommand implements BasicCommand {
                 .replace("%message%", message);
         Component senderMessage = mm.deserialize(senderMessageRaw);
 
-        stack.getExecutor().sendMessage(senderMessage);
-
-        if (ignoreManager.isIgnoring(recipientUUID, senderUUID)) { // TODO - Check this?
+        if (ignoreManager.isIgnoring(recipientUUID, senderUUID)) {
+            stack.getExecutor().sendMessage(senderMessage);
+            return;
         }
+
+        stack.getExecutor().sendMessage(senderMessage);
 
         // Send the formatted message to the recipient.
 
@@ -80,5 +85,13 @@ public class WhisperCommand implements BasicCommand {
         messageManager.setLastMessaged(senderUUID, recipientUUID);
         messageManager.setLastMessaged(recipientUUID, senderUUID);
 
+    }
+
+    // TODO find a better way to do this via Arguments
+    @Override
+    public @NotNull Collection<String> suggest(@NotNull CommandSourceStack stack, String @NotNull [] args) {
+        return Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toList());
     }
 }

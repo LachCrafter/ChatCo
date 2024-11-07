@@ -71,6 +71,7 @@ public class IgnoreCommand implements BasicCommand {
         }
     }
 
+    // TODO find a better way to do this via Arguments
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandSourceStack stack, String @NotNull [] args) {
         return Bukkit.getOnlinePlayers().stream()

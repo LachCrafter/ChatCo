@@ -42,12 +42,14 @@ public class ReplyCommand implements BasicCommand {
             Component noneReply = mm.deserialize(config.getString("messages.noneReply"));
 
             stack.getExecutor().sendMessage(noneReply);
+            return;
         }
 
         Player target = Bukkit.getPlayer(targetUUID);
         if (target == null || !target.isOnline()) {
             Component notFound = mm.deserialize(config.getString("messages.playerNotFound"));
             stack.getExecutor().sendMessage(notFound);
+            return;
         }
 
         String message = String.join(" ", args);
@@ -57,6 +59,11 @@ public class ReplyCommand implements BasicCommand {
                 .replace("%player%", stack.getExecutor().getName())
                 .replace("%message%", message);
         Component senderMessage = mm.deserialize(senderMessageRaw);
+
+        if (ignoreManager.isIgnoring(targetUUID, senderUUID)) {
+            stack.getExecutor().sendMessage(senderMessage);
+            return;
+        }
 
         stack.getExecutor().sendMessage(senderMessage);
 
