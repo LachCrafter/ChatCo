@@ -48,16 +48,14 @@ public class IgnoreCommand implements CommandExecutor {
 
         String targetName = args[0];
 
-        // Get the OfflinePlayer object.
+        // Get the OfflinePlayer object, handling null in case the player isn't cached or hasn't joined.
         OfflinePlayer target = Bukkit.getOfflinePlayerIfCached(targetName);
-        if (target == null) {
-            // Try to get the player by UUID or fetch them from the Mojang API.
-            target = Bukkit.getOfflinePlayer(targetName);
-            if (!target.hasPlayedBefore()) {
-                Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
-                player.sendMessage(playerNotFound);
-                return true;
-            }
+
+        // If the player hasn't been cached or never played, send an error message and exit.
+        if (target == null || !target.hasPlayedBefore()) {
+            Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
+            sender.sendMessage(playerNotFound);
+            return true;
         }
 
         // Prevent players from ignoring themselves.
