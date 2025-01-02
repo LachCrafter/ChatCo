@@ -40,6 +40,11 @@ tasks.withType(JavaCompile).configureEach {
     }
 }
 
+runServer {
+    minecraftVersion("1.21.4")
+    jvmArgs("-DPaper.IgnoreJavaVersion=true", "-Dcom.mojang.eula.agree=true")
+}
+
 processResources {
     def props = [version: version]
     inputs.properties props
