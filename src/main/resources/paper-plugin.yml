@@ -1,7 +1,6 @@
 name: ChatCo
 version: '1.0'
 main: eu.felicianware.chatCo.ChatCo
-bootstrapper: eu.felicianware.chatCo.ChatCoBootstrapper
 authors: [LachCrafter]
 api-version: '1.21'
 folia-supported: true

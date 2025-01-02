@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ public class IgnoreListCommand implements BasicCommand {
     }
 
     @Override
-    public void execute(CommandSourceStack stack, String[] args) {
+    public void execute(CommandSourceStack stack, String @NotNull [] args) {
 
         List<String> ignoredNames = ignoreManager.getIgnoredPlayerNames(stack.getExecutor().getUniqueId());
 
@@ -32,7 +33,6 @@ public class IgnoreListCommand implements BasicCommand {
                 listBuilder.append(name).append(", ");
             }
 
-            // Remove the trailing comma and space.
             String list = listBuilder.substring(0, listBuilder.length() - 2);
 
             String ignoreList = config.getString("messages.ignoreList");

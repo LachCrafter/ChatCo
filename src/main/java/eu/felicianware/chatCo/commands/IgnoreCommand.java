@@ -34,17 +34,14 @@ public class IgnoreCommand implements BasicCommand {
 
         String targetName = args[0];
 
-        // Get the OfflinePlayer object, handling null in case the player isn't cached or hasn't joined.
         OfflinePlayer target = Bukkit.getOfflinePlayerIfCached(targetName);
 
-        // If the player hasn't been cached or never played, send an error message and exit.
         if (target == null || !target.hasPlayedBefore()) {
             Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
             stack.getExecutor().sendMessage(playerNotFound);
             return;
         }
 
-        // Prevent players from ignoring themselves.
         if (stack.getExecutor().getUniqueId().equals(target.getUniqueId())) {
             Component ignoreThemselves = mm.deserialize(config.getString("messages.ignoreSelf"));
             stack.getExecutor().sendMessage(ignoreThemselves);
@@ -54,7 +51,6 @@ public class IgnoreCommand implements BasicCommand {
         UUID playerUUID = stack.getExecutor().getUniqueId();
         UUID targetUUID = target.getUniqueId();
 
-        // Toggle ignoring status.
         if (ignoreManager.isIgnoring(playerUUID, targetUUID)) {
             ignoreManager.unignorePlayer(playerUUID, targetUUID);
             String unignoringMessage = config.getString("messages.unignoring");
@@ -62,7 +58,6 @@ public class IgnoreCommand implements BasicCommand {
             Component unignored = mm.deserialize(unignoringMessage);
             stack.getExecutor().sendMessage(unignored);
         } else {
-            // Ignore the player.
             ignoreManager.ignorePlayer(playerUUID, targetUUID);
             String ignoringMessage = config.getString("messages.ignoring");
             ignoringMessage = ignoringMessage.replace("%player%", target.getName());
@@ -71,7 +66,6 @@ public class IgnoreCommand implements BasicCommand {
         }
     }
 
-    // TODO find a better way to do this via Arguments
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandSourceStack stack, String @NotNull [] args) {
         return Bukkit.getOnlinePlayers().stream()

@@ -30,7 +30,6 @@ public class WhisperCommand implements BasicCommand {
 
     @Override
     public void execute(@NotNull CommandSourceStack stack, String[] args) {
-        // Check if the correct number of arguments are provided.
         if (args.length < 2) {
             String usage = config.getString("usages.whisper");
             usage = usage
@@ -40,18 +39,15 @@ public class WhisperCommand implements BasicCommand {
             return;
         }
 
-        // Retrieve the target player.
         String targetName = args[0];
         Player target = stack.getExecutor().getServer().getPlayerExact(targetName);
 
-        // Check if the target player is online.
         if (target == null || !target.isOnline()) {
 
             Component notFound = mm.deserialize(config.getString("messages.playerNotFound"));
             stack.getExecutor().sendMessage(notFound);
         }
 
-        // Construct the message from the arguments.
         String[] messageArgs = Arrays.copyOfRange(args, 1, args.length);
         String message = String.join(" ", messageArgs);
 
@@ -71,8 +67,6 @@ public class WhisperCommand implements BasicCommand {
 
         stack.getExecutor().sendMessage(senderMessage);
 
-        // Send the formatted message to the recipient.
-
         String targetMessageRaw = config.getString("messages.whisperTarget");
         targetMessageRaw = targetMessageRaw
                 .replace("%player%", stack.getSender().getName())
@@ -81,7 +75,6 @@ public class WhisperCommand implements BasicCommand {
 
         target.sendMessage(targetMessage);
 
-        // Update last messaged players.
         messageManager.setLastMessaged(senderUUID, recipientUUID);
         messageManager.setLastMessaged(recipientUUID, senderUUID);
 

@@ -6,6 +6,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 public class ReloadCommand implements BasicCommand {
     private final ChatCo plugin;
@@ -18,7 +19,7 @@ public class ReloadCommand implements BasicCommand {
     }
 
     @Override
-    public void execute(CommandSourceStack stack, String[] args) {
+    public void execute(CommandSourceStack stack, String @NotNull [] args) {
         if (stack.getExecutor().hasPermission("chatco.admin")) {
             plugin.reloadConfig();
         } else {

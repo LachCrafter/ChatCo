@@ -44,18 +44,13 @@ public final class ChatCo extends JavaPlugin {
             );
         });
 
-        // Register Listeners
         getServer().getPluginManager().registerEvents(new ChatListener(), this);
 
-        // Create the data folder if it doesn't exist
         if (!getDataFolder().exists()) {
             getDataFolder().mkdirs();
         }
 
-        // Initialize the ignore list file
         ignoreListFile = new File(getDataFolder(), "ignoreLists.yml");
-
-        // Load ignore lists
         ignoreManager.loadIgnoreLists(ignoreListFile);
     }
 
