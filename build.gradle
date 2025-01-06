@@ -53,3 +53,11 @@ processResources {
         expand props
     }
 }
+
+
+jar {
+    archiveBaseName.set("ChatCo")
+    archiveVersion.set(provider { version })
+    archiveClassifier.set("")
+    archiveExtension.set("jar")
+}
