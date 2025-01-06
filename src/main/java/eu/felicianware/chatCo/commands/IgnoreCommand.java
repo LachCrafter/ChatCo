@@ -36,7 +36,7 @@ public class IgnoreCommand implements BasicCommand {
 
         OfflinePlayer target = Bukkit.getOfflinePlayerIfCached(targetName);
 
-        if (target == null || !target.hasPlayedBefore()) {
+        if (target == null) {
             Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
             stack.getExecutor().sendMessage(playerNotFound);
             return;
