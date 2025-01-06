@@ -56,7 +56,7 @@ public class WhisperCommand implements BasicCommand {
 
         String senderMessageRaw = config.getString("messages.whisperSender");
         senderMessageRaw = senderMessageRaw
-                .replace("%player%", stack.getSender().getName())
+                .replace("%player%", targetName)
                 .replace("%message%", message);
         Component senderMessage = mm.deserialize(senderMessageRaw);
 
