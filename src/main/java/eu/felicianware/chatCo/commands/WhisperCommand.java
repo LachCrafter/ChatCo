@@ -46,6 +46,7 @@ public class WhisperCommand implements BasicCommand {
 
             Component notFound = mm.deserialize(config.getString("messages.playerNotFound"));
             stack.getExecutor().sendMessage(notFound);
+            return;
         }
 
         String[] messageArgs = Arrays.copyOfRange(args, 1, args.length);
