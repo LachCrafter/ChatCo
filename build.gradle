@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'eu.felicianware'
-version = '1.2-beta'
+version = '1.2'
 
 repositories {
     mavenCentral()
