@@ -1,27 +1,21 @@
 package eu.felicianware.chatCo.commands;
 
 import eu.felicianware.chatCo.managers.IgnoreManager;
+import io.papermc.paper.command.brigadier.BasicCommand;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collection;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-/**
- * @author lachcrafter
- *
- * Handles the /ignore command to ignore or unignore players.
- */
-public class IgnoreCommand implements CommandExecutor {
-
+public class IgnoreCommand implements BasicCommand {
     private final FileConfiguration config;
     private final MiniMessage mm = MiniMessage.miniMessage();
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
@@ -31,64 +25,51 @@ public class IgnoreCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, String[] args) {
-
-        // Ensure the sender is a player.
-        if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("Only players can use this command.", NamedTextColor.RED));
-            return true;
-        }
-
-        // Check if the correct number of arguments are provided.
+    public void execute(@NotNull CommandSourceStack stack, String[] args) {
         if (args.length != 1) {
             Component usage = mm.deserialize(config.getString("usages.ignore"));
-            player.sendMessage(usage);
-            return true;
+            stack.getSender().sendMessage(usage);
+            return;
         }
 
         String targetName = args[0];
 
-        // Get the OfflinePlayer object, handling null in case the player isn't cached or hasn't joined.
         OfflinePlayer target = Bukkit.getOfflinePlayerIfCached(targetName);
 
-        // If the player hasn't been cached or never played, send an error message and exit.
-        if (target == null || !target.hasPlayedBefore()) {
+        if (target == null) {
             Component playerNotFound = mm.deserialize(config.getString("messages.playerNotFound"));
-            sender.sendMessage(playerNotFound);
-            return true;
+            stack.getExecutor().sendMessage(playerNotFound);
+            return;
         }
 
-        // Prevent players from ignoring themselves.
-        if (player.getUniqueId().equals(target.getUniqueId())) {
+        if (stack.getExecutor().getUniqueId().equals(target.getUniqueId())) {
             Component ignoreThemselves = mm.deserialize(config.getString("messages.ignoreSelf"));
-            player.sendMessage(ignoreThemselves);
-            return true;
+            stack.getExecutor().sendMessage(ignoreThemselves);
+            return;
         }
 
-        UUID playerUUID = player.getUniqueId();
+        UUID playerUUID = stack.getExecutor().getUniqueId();
         UUID targetUUID = target.getUniqueId();
 
-        // Toggle ignoring status.
         if (ignoreManager.isIgnoring(playerUUID, targetUUID)) {
-            // Unignore the player.
             ignoreManager.unignorePlayer(playerUUID, targetUUID);
             String unignoringMessage = config.getString("messages.unignoring");
-            unignoringMessage = unignoringMessage
-                    .replace("%player%", target.getName());
+            unignoringMessage = unignoringMessage.replace("%player%", target.getName());
             Component unignored = mm.deserialize(unignoringMessage);
-
-            player.sendMessage(unignored);
-
+            stack.getExecutor().sendMessage(unignored);
         } else {
-            // Ignore the player.
             ignoreManager.ignorePlayer(playerUUID, targetUUID);
             String ignoringMessage = config.getString("messages.ignoring");
-            ignoringMessage = ignoringMessage
-                    .replace("%player%", target.getName());
+            ignoringMessage = ignoringMessage.replace("%player%", target.getName());
             Component ignored = mm.deserialize(ignoringMessage);
-            player.sendMessage(ignored);
+            stack.getExecutor().sendMessage(ignored);
         }
+    }
 
-        return true;
+    @Override
+    public @NotNull Collection<String> suggest(@NotNull CommandSourceStack stack, String @NotNull [] args) {
+        return Bukkit.getOnlinePlayers().stream()
+                .map(Player::getName)
+                .collect(Collectors.toList());
     }
 }
