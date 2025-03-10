@@ -56,7 +56,7 @@ public class ReplyCommand implements BasicCommand {
 
         String senderMessageRaw = config.getString("messages.whisperSender");
         senderMessageRaw = senderMessageRaw
-                .replace("%player%", stack.getExecutor().getName())
+                .replace("%player%", target.getName())
                 .replace("%message%", message);
         Component senderMessage = mm.deserialize(senderMessageRaw);
 
