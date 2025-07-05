@@ -1,12 +1,5 @@
 package eu.felicianware.chatCo;
 
-/**
- * @author lachcrafter
- *
- * This handles greenchat (messages that start with >)
- * And this is a part of the ignoring system.
- */
-
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.audience.Audience;
@@ -20,6 +13,12 @@ import org.bukkit.event.Listener;
 import java.util.Set;
 import java.util.UUID;
 
+/**
+ * @author lachcrafter
+ *
+ * This handles greenchat (messages that start with >)
+ * And this is a part of the ignoring system.
+ */
 public class ChatListener implements Listener {
 
     private final IgnoreManager ignoreManager = IgnoreManager.getInstance();
