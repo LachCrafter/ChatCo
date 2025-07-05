@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -68,8 +69,14 @@ public class IgnoreCommand implements BasicCommand {
 
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandSourceStack stack, String @NotNull [] args) {
+        if (args.length == 0) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .collect(Collectors.toList());
+        }
         return Bukkit.getOnlinePlayers().stream()
                 .map(Player::getName)
+                .filter(string -> string.startsWith(args[0]))
                 .collect(Collectors.toList());
     }
 }

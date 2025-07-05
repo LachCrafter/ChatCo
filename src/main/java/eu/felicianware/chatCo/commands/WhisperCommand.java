@@ -1,9 +1,12 @@
 package eu.felicianware.chatCo.commands;
 
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.tree.LiteralCommandNode;
 import eu.felicianware.chatCo.managers.IgnoreManager;
 import eu.felicianware.chatCo.managers.MessageManager;
 import io.papermc.paper.command.brigadier.BasicCommand;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
@@ -13,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -81,11 +85,16 @@ public class WhisperCommand implements BasicCommand {
 
     }
 
-    // TODO find a better way to do this via Arguments
     @Override
     public @NotNull Collection<String> suggest(@NotNull CommandSourceStack stack, String @NotNull [] args) {
+        if (args.length == 0) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .collect(Collectors.toList());
+        }
         return Bukkit.getOnlinePlayers().stream()
                 .map(Player::getName)
+                .filter(string -> string.startsWith(args[0]))
                 .collect(Collectors.toList());
     }
 }
