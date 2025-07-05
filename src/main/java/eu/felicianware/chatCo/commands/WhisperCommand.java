@@ -14,10 +14,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class WhisperCommand implements BasicCommand {
@@ -91,10 +88,12 @@ public class WhisperCommand implements BasicCommand {
             return Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)
                     .collect(Collectors.toList());
+        } else if (args.length == 1) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(string -> string.startsWith(args[0]))
+                    .collect(Collectors.toList());
         }
-        return Bukkit.getOnlinePlayers().stream()
-                .map(Player::getName)
-                .filter(string -> string.startsWith(args[0]))
-                .collect(Collectors.toList());
+        return Collections.emptyList();
     }
 }

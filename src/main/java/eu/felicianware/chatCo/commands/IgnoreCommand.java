@@ -13,6 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -73,10 +74,12 @@ public class IgnoreCommand implements BasicCommand {
             return Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)
                     .collect(Collectors.toList());
+        } else if (args.length == 1) {
+            return Bukkit.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .filter(string -> string.startsWith(args[0]))
+                    .collect(Collectors.toList());
         }
-        return Bukkit.getOnlinePlayers().stream()
-                .map(Player::getName)
-                .filter(string -> string.startsWith(args[0]))
-                .collect(Collectors.toList());
+        return Collections.emptyList();
     }
 }
